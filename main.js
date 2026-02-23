@@ -14,7 +14,7 @@ document.querySelectorAll("input , textarea").forEach(function (el) {
   el.addEventListener("blur", function () {
     el.placeholder = original;
   });
-}); // بنحفظ فيه index المنتج اللي بنعدله، لو -1 معناه مفيش تعديل
+});
 
 if (localStorage.getItem("products") != null) {
   products = JSON.parse(localStorage.getItem("products"));
@@ -31,10 +31,8 @@ function getProduct() {
   let product = { name, price, desc };
 
   if (editIndex === -1) {
-    // حالة الإضافة العادية
     products.push(product);
   } else {
-    // حالة التعديل: بنحل المنتج القديم بالجديد
     products[editIndex] = product;
     editIndex = -1;
     document.querySelector("button").textContent = "Add Product";
@@ -47,7 +45,7 @@ function getProduct() {
 
 function displayProduct() {
   let tbody = document.getElementById("body");
-  tbody.innerHTML = ""; // بنمسح الجدول الأول قبل ما نعيد رسمه
+  tbody.innerHTML = "";
 
   products.forEach((product, index) => {
     tbody.innerHTML += `
