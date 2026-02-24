@@ -28,7 +28,7 @@ function validateInputs(name, price) {
   }
 
   if (name.length < 2) {
-    showError(prodName, "Name must be at least 3 characters.");
+    showError(prodName, "Name must be at least 2 characters.");
     return false;
   }
 
