@@ -7,7 +7,6 @@ var editIndex = -1;
 
 document.querySelectorAll("input , textarea").forEach(function (el) {
   let original = el.placeholder;
-
   el.addEventListener("focus", function () {
     el.placeholder = "";
   });
@@ -21,12 +20,70 @@ if (localStorage.getItem("products") != null) {
   displayProduct();
 }
 
+// Validation
+function validateInputs(name, price) {
+  if (!name) {
+    showError(prodName, "Product name is required.");
+    return false;
+  }
+
+  if (name.length < 2) {
+    showError(prodName, "Name must be at least 3 characters.");
+    return false;
+  }
+
+  if (!/^[a-zA-Z\u0600-\u06FF\s]+$/.test(name)) {
+    showError(prodName, "Name must contain letters only.");
+    return false;
+  }
+
+  if (!price) {
+    showError(prodPrice, "Product price is required.");
+    return false;
+  }
+
+  if (parseFloat(price) <= 0) {
+    showError(prodPrice, "Price must be greater than zero.");
+    return false;
+  }
+
+  return true;
+}
+
+function showError(inputEl, message) {
+  clearError(inputEl);
+
+  inputEl.classList.add("is-invalid");
+
+  let errorDiv = document.createElement("div");
+  errorDiv.classList.add("invalid-feedback", "validation-msg");
+  errorDiv.textContent = message;
+
+  inputEl.insertAdjacentElement("afterend", errorDiv);
+}
+
+function clearError(inputEl) {
+  inputEl.classList.remove("is-invalid");
+
+  let next = inputEl.nextElementSibling;
+  if (next && next.classList.contains("validation-msg")) {
+    next.remove();
+  }
+}
+
+function clearAllErrors() {
+  clearError(prodName);
+  clearError(prodPrice);
+}
+
 function getProduct() {
   let name = prodName.value.trim();
   let price = prodPrice.value.trim();
   let desc = prodDesc.value.trim();
 
-  if (!name || !price) return alert("Please enter name and price!");
+  clearAllErrors();
+
+  if (!validateInputs(name, price)) return;
 
   let product = { name, price, desc };
 
@@ -35,7 +92,8 @@ function getProduct() {
   } else {
     products[editIndex] = product;
     editIndex = -1;
-    document.querySelector("button").textContent = "Add Product";
+    document.getElementById("saveBtn").textContent = "Add Product";
+    document.getElementById("cancelBtn").style.display = "none";
   }
 
   localStorage.setItem("products", JSON.stringify(products));
@@ -74,7 +132,17 @@ function editProduct(index) {
   prodDesc.value = product.desc;
 
   editIndex = index;
-  document.querySelector("button").textContent = "Save Update";
+  clearAllErrors();
+  document.getElementById("saveBtn").textContent = "Save Update";
+  document.getElementById("cancelBtn").style.display = "inline-block";
+}
+
+function cancelEdit() {
+  editIndex = -1;
+  clear();
+  clearAllErrors();
+  document.getElementById("saveBtn").textContent = "Add Product";
+  document.getElementById("cancelBtn").style.display = "none";
 }
 
 function clear() {
